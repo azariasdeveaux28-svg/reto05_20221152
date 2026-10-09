@@ -59,6 +59,22 @@ module tb_top_20221152;
             endcase
         end
     endfunction
+     function [3:0] ref_y;
+        input [3:0] n;   // combinacion a,b,c,d
+        input [3:0] x;   // operando A
+        input [3:0] z;   // operando B
+        integer r;
+        begin
+            case ({ref_v(n), ref_u(n)})
+                2'b00:   r = x + z;             // SUMA
+                2'b01:   r = (x > z) ? x : z;   // MAYOR
+                2'b10:   r = x - z;             // RESTA
+                2'b11:   r = x ^ z;             // XOR
+                default: r = 0;
+            endcase
+            ref_y = r[3:0];                     // me quedo con los 4 bits bajos
+        end
+    endfunction
 
     // Secuencia principal de pruebas (esta parte tambien pregunte a la ia)
     initial begin

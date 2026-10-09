@@ -1,0 +1,21 @@
+module top_20221152 (
+    input  wire       a,
+    input  wire       b,
+    input  wire       c,
+    input  wire       d,
+    input  wire [3:0] A,
+    input  wire [3:0] B,
+    input  wire       clk,
+    input  wire       rst,
+    input  wire       en,
+    output wire       u,
+    output wire       v,
+    output wire [3:0] Y,
+    output wire       flag_comb,
+    output wire [3:0] Q,
+    output wire       flag_q
+);
+
+    
+
+endmodule

@@ -15,8 +15,10 @@ module tb_top_20221152;
         // Contadores de la verificacion
     integer comparaciones;
     integer errores;
+        integer i;
+    reg [3:0] idx;
 
-    // Diseno bajo prueba, conectado por nombre. esta parte la ia me ayudo ha hacerla ya que no tenia una idea clara y se me estaba
+    // Diseño bajo prueba, conectado por nombre. esta parte la ia me ayudo ha hacerla ya que no tenia una idea clara y se me estaba
     //acabando el tiempo de entrega
     top_20221152 dut (
         .a(a), .b(b), .c(c), .d(d),
@@ -35,7 +37,28 @@ module tb_top_20221152;
     initial begin
         $dumpfile("build/dump.vcd");
         $dumpvars(0, tb_top_20221152);
-    end
+    end   
+     // Hoja de respuestas de u: sale de la lista de minterms del PDF que me asignaron como matricula
+    function ref_u;
+        input [3:0] n;
+        begin
+            case (n)
+                4'd3, 4'd4, 4'd5, 4'd6, 4'd7, 4'd9, 4'd11, 4'd13, 4'd15: ref_u = 1'b1;
+                default: ref_u = 1'b0;
+            endcase
+        end
+    endfunction
+        // Hoja de respuestas de v: sale de la lista de minterms del PDF esta parte como es similar a la  de u copie y
+        // pegue algunas cosas
+    function ref_v;
+        input [3:0] n;
+        begin
+            case (n)
+                4'd2, 4'd6, 4'd7, 4'd8, 4'd9, 4'd10, 4'd11, 4'd14, 4'd15: ref_v = 1'b1;
+                default: ref_v = 1'b0;
+            endcase
+        end
+    endfunction
 
     // Secuencia principal de pruebas (esta parte tambien pregunte a la ia)
     initial begin

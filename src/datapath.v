@@ -23,4 +23,8 @@ module datapath(
      // MAYOR: esto me servira de indicador si son iguales me dara un 1
      wire [3:0] y_max = (A > B) ? A : B;
      wire       f_max = (A == B);
+
+      // Seleccion segun {v,u}: 
+    assign Y         = v ? (u ? y_xor : y_sub) : (u ? y_max : y_sum);
+    assign flag_comb = v ? (u ? f_xor : f_sub) : (u ? f_max : f_sum);
 endmodule

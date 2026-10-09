@@ -27,5 +27,11 @@ module top_20221152 (
         .Y(Y), .flag_comb(flag_comb)
     );
     //esto es basicamente como una ruta para los datos.
+        result_register inst_register (
+        .clk(clk), .rst(rst), .en(en),
+        .Y(Y), .flag_comb(flag_comb),
+        .Q(Q), .flag_q(flag_q)
+    );
+
 
 endmodule

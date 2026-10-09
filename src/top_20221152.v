@@ -21,5 +21,11 @@ module top_20221152 (
         .a(a), .b(b), .c(c), .d(d),
         .u(u), .v(v)
     );
+    datapath inst_datapath (
+        .A(A), .B(B),
+        .u(u), .v(v),
+        .Y(Y), .flag_comb(flag_comb)
+    );
+    //esto es basicamente como una ruta para los datos.
 
 endmodule

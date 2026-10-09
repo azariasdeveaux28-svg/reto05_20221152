@@ -69,8 +69,18 @@ module tb_top_20221152;
         rst = 0; en = 0;
         #20;
 
-        // aqui iran las pruebas
-
+                // Prueba del control: las 16 combinaciones de a,b,c,d
+        for (i = 0; i < 16; i = i + 1) begin
+            idx = i;
+            {a, b, c, d} = idx;
+            #1;
+            comparaciones = comparaciones + 1;
+            if (u !== ref_u(idx) || v !== ref_v(idx)) begin
+                errores = errores + 1;
+                $display("ERROR control idx=%0d: u=%b (esperado %b) v=%b (esperado %b)",
+                         idx, u, ref_u(idx), v, ref_v(idx));
+            end
+        end
         $display("Fin: %0d comparaciones, %0d errores", comparaciones, errores);
         $finish;
     end

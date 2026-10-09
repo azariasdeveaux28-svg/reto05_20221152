@@ -16,10 +16,10 @@ module datapath(
     wire       f_sub = (A < B);
 
     // XOR: el indicador es 1 si hay una cantidad impar de unos, esta parte me era un poco confusa, y investigue un poco con la ia 
-    para saber que opciones tenia para que la extructura me quede bien.
+    //para saber que opciones tenia para que la extructura me quede bien.
     wire [3:0] y_xor = A ^ B;
     wire       f_xor = ^y_xor;
-    
+
      // MAYOR: esto me servira de indicador si son iguales me dara un 1
      wire [3:0] y_max = (A > B) ? A : B;
      wire       f_max = (A == B);

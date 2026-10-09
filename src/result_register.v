@@ -1,3 +1,4 @@
+// estas lineas las pegue y copie,porque lo habia hecho mal la parte del modulo y me di cuenta despues por eso puede que aparescan 24 lineas de un fuetazo.
 module result_register (
     input  wire       clk,
     input  wire       rst,
@@ -18,5 +19,6 @@ module result_register (
             flag_q <= flag_comb;
         end
     end
+
 
 endmodule

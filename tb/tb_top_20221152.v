@@ -149,6 +149,235 @@ module tb_top_20221152;
                 end
             end
         end
+                // Prueba temporal 1: reset asincrono entre flancos
+        @(negedge clk);
+        #2;
+        rst = 1'b1;
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'b0000 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 1: reset asincrono no limpio el registro");
+        end
+                // Prueba temporal 2: prioridad del reset sobre en
+        @(negedge clk);
+        en = 1'b1;
+        A = 4'd15;
+        B = 4'd1;
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'b0000 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 2: reset no tuvo prioridad sobre en");
+        end
+                // Prueba temporal 3: liberar reset sin capturar datos
+        @(negedge clk);
+        #2;
+        rst = 1'b0;
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'b0000 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 3: registro cambio al liberar reset");
+        end
+                // Prueba temporal 4: captura de SUMA con acarreo
+        @(negedge clk);
+        {a, b, c, d} = 4'd0;  // u=0, v=0: SUMA
+        A = 4'd15;
+        B = 4'd1;
+        en = 1'b1;
+
+        #1;
+        if (Y !== 4'd0 || flag_comb !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 4: resultado combinacional de SUMA");
+        end
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd0 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 4: SUMA no se capturo correctamente");
+        end
+                // Prueba temporal 5: captura de MAYOR con empate
+        @(negedge clk);
+        {a, b, c, d} = 4'd3;  // u=1, v=0: MAYOR
+        A = 4'd9;
+        B = 4'd9;
+        en = 1'b1;
+
+        #1;
+        if (Y !== 4'd9 || flag_comb !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 5: resultado combinacional de MAYOR");
+        end
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd9 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 5: MAYOR no se capturo correctamente");
+        end
+                // Prueba temporal 6: captura de RESTA con prestamo
+        @(negedge clk);
+        {a, b, c, d} = 4'd2;  // u=0, v=1: RESTA
+        A = 4'd0;
+        B = 4'd1;
+        en = 1'b1;
+
+        #1;
+        if (Y !== 4'd15 || flag_comb !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 6: resultado combinacional de RESTA");
+        end
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd15 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 6: RESTA no se capturo correctamente");
+        end
+                // Prueba temporal 7: captura de XOR con paridad impar
+        @(negedge clk);
+        {a, b, c, d} = 4'd6;  // u=1, v=1: XOR
+        A = 4'd5;
+        B = 4'd1;
+        en = 1'b1;
+
+        #1;
+        if (Y !== 4'd4 || flag_comb !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 7: resultado combinacional de XOR");
+        end
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd4 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 7: XOR no se capturo correctamente");
+        end
+                // Prueba temporal 8: retencion del registro con en = 0
+        @(negedge clk);
+        en = 1'b0;
+
+        // Cambiamos de XOR a SUMA
+        {a, b, c, d} = 4'd0;
+        A = 4'd2;
+        B = 4'd3;
+
+        #1;
+
+        // La salida combinacional debe cambiar a 5
+        if (Y !== 4'd5 || flag_comb !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 8: salida combinacional incorrecta");
+        end
+
+        // Dejamos pasar un flanco ascendente
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        // El registro debe conservar el resultado anterior
+        if (Q !== 4'd4 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 8: el registro no conservo su valor");
+        end
+                // Prueba temporal 9: volver a habilitar la captura
+        @(negedge clk);
+        en = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd5 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 9: no capturo al volver a habilitar");
+        end
+                // Prueba temporal 10: cambiar entradas entre flancos
+        @(negedge clk);
+
+        // Cambiamos a RESTA con prestamo
+        {a, b, c, d} = 4'd2;
+        A = 4'd0;
+        B = 4'd1;
+        en = 1'b1;
+
+        #2;
+
+        comparaciones = comparaciones + 1;
+
+        // Todavia no ha llegado otro flanco ascendente
+        if (Q !== 4'd5 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 10: el registro cambio sin flanco");
+        end
+                // Prueba temporal 11: reset despues de guardar un valor no nulo
+        @(posedge clk);
+        #1;
+
+        // Primero comprobamos que almacenamos 15
+        if (Q !== 4'd15 || flag_q !== 1'b1) begin
+            errores = errores + 1;
+            $display("ERROR temporal 11: no se preparo el valor antes del reset");
+        end
+
+        // Deshabilitamos la captura y activamos reset entre flancos
+        @(negedge clk);
+        #2;
+        en = 1'b0;
+        rst = 1'b1;
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd0 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 11: reset no borro el valor almacenado");
+        end
+                // Prueba temporal 12: capturar nuevamente despues del reset
+        @(negedge clk);
+        #2;
+
+        rst = 1'b0;
+        en = 1'b1;
+
+        {a, b, c, d} = 4'd0;
+        A = 4'd7;
+        B = 4'd2;
+
+        @(posedge clk);
+        #1;
+
+        comparaciones = comparaciones + 1;
+
+        if (Q !== 4'd9 || flag_q !== 1'b0) begin
+            errores = errores + 1;
+            $display("ERROR temporal 12: no capturo despues del reset");
+        end
         $display("Fin: %0d comparaciones, %0d errores", comparaciones, errores);
         $finish;
     end

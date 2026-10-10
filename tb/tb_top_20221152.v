@@ -17,6 +17,8 @@ module tb_top_20221152;
     integer errores;
         integer i;
     reg [3:0] idx;
+    integer j;
+    integer k;
 
     // Diseño bajo prueba, conectado por nombre. esta parte la ia me ayudo ha hacerla ya que no tenia una idea clara y se me estaba
     //acabando el tiempo de entrega
@@ -75,6 +77,27 @@ module tb_top_20221152;
             ref_y = r[3:0];                     // me quedo con los 4 bits bajos
         end
     endfunction
+    function ref_flag;
+        input [3:0] n;   // combinacion a,b,c,d
+        input [3:0] x;   // operando A
+        input [3:0] z;   // operando B
+        integer r, k, cuenta;
+        begin
+            case ({ref_v(n), ref_u(n)})
+              2'b00: ref_flag = (({1'b0, x} + {1'b0, z}) > 5'd15);   // SUMA: acarreo
+                2'b01: ref_flag = (x == z);         // MAYOR: empate
+                2'b10: ref_flag = (x < z);          // RESTA: prestamo
+                2'b11: begin                        // XOR: paridad impar
+                    r = x ^ z;
+                    cuenta = 0;
+                    for (k = 0; k < 4; k = k + 1)
+                        if (r[k]) cuenta = cuenta + 1;
+                    ref_flag = ((cuenta % 2) == 1);
+                end
+                default: ref_flag = 1'b0;
+            endcase
+        end
+    endfunction
 
     // Secuencia principal de pruebas (esta parte tambien pregunte a la ia)
     initial begin
@@ -95,6 +118,35 @@ module tb_top_20221152;
                 errores = errores + 1;
                 $display("ERROR control idx=%0d: u=%b (esperado %b) v=%b (esperado %b)",
                          idx, u, ref_u(idx), v, ref_v(idx));
+            end
+        end      
+          // Prueba de las 4096 combinaciones de control y operandos
+        for (i = 0; i < 16; i = i + 1) begin
+            idx = i;
+            {a, b, c, d} = idx;
+
+            for (j = 0; j < 16; j = j + 1) begin
+                A = j;
+
+                for (k = 0; k < 16; k = k + 1) begin
+                    B = k;
+                    #1;
+
+                    comparaciones = comparaciones + 1;
+
+                    if (u !== ref_u(idx) ||
+                        v !== ref_v(idx) ||
+                        Y !== ref_y(idx, A, B) ||
+                        flag_comb !== ref_flag(idx, A, B)) begin
+
+                        errores = errores + 1;
+
+                        $display(
+                            "ERROR idx=%0d A=%0d B=%0d | u=%b v=%b Y=%d flag=%b",
+                            idx, A, B, u, v, Y, flag_comb
+                        );
+                    end
+                end
             end
         end
         $display("Fin: %0d comparaciones, %0d errores", comparaciones, errores);
